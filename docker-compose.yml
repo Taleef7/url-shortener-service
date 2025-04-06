@@ -1,0 +1,8 @@
+version: '3.8' # Specifies the version of the Docker Compose file format
+
+services:
+  redis:
+    image: redis:7 # Use the official Redis image, version 7 (you could also use 'latest')
+    container_name: url-shortener-redis # Give the running container a specific name
+    ports:
+      - "6379:6379" # Map port 6379 on your host machine to port 6379 inside the container
