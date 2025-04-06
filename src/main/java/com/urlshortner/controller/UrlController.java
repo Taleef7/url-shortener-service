@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
+// Import the new DTO at the top
+import com.urlshortner.dto.UrlStatsResponse;
 
 // ... other imports ...
 import org.slf4j.Logger; // Import Logger
@@ -68,6 +70,21 @@ public class UrlController {
                .location(URI.create(longUrl)) // Use URI.create for location header
                .build();
     }
+
+
+    @GetMapping("/api/stats/{shortId}")
+    public ResponseEntity<UrlStatsResponse> getStats(@PathVariable String shortId) {
+        UrlStatsResponse stats = urlService.getUrlStats(shortId);
+
+        if (stats == null) {
+            // If service returns null (meaning shortId mapping didn't exist)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Short URL not found, cannot get stats");
+        }
+
+        // Return 200 OK with the stats payload
+        return ResponseEntity.ok(stats);
+    }
+
 
      // Basic helper to check if a string looks like a URL (can be improved)
     private boolean isValidUrl(String url) {
