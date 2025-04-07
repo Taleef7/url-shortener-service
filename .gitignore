@@ -58,7 +58,6 @@ target/
 hs_err_pid*
 
 # Build Tools
-.mvn/
 build/
 
 # IDE files (VS Code, IntelliJ, Eclipse)
