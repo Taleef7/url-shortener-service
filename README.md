@@ -7,7 +7,7 @@ The service utilizes Redis for efficient data storage:
 * **Redis Streams:** Used for asynchronous processing of click events generated during redirection.
 * **Redis Hashes:** Stores the click counts for basic analytics.
 
-This project demonstrates core concepts of Spring Boot web development, data persistence with Redis, asynchronous processing patterns, and API design.
+This project demonstrates core concepts of Spring Boot web development, data persistence with Redis, asynchronous processing patterns, API design, unit/integration testing, and cloud deployment.
 
 ## Features
 
@@ -24,13 +24,15 @@ This project demonstrates core concepts of Spring Boot web development, data per
 * **Database/Cache:** Redis (Leveraging Key-Value, Streams, and Hashes)
     * **Redis Client:** Lettuce (provided by Spring Data Redis)
 * **Build Tool:** Apache Maven
-* **Containerization:** Docker & Docker Compose (for local Redis environment)
+* **Containerization:** Docker & Docker Compose (for local Redis environment), Dockerfile (for deployment build)
 * **Testing:**
     * JUnit 5
     * Mockito
     * AssertJ
+    * Testcontainers (for integration tests with Redis)
 * **Logging:** SLF4j (with Logback implementation via Spring Boot)
 * **Validation:** Jakarta Bean Validation
+* **Deployment:** Render
 
 ## Setup and Running Locally
 
@@ -81,18 +83,19 @@ This project demonstrates core concepts of Spring Boot web development, data per
 * **Request Body:** (`application/json`)
     ```json
     {
-        "longUrl": "[https://example.com/some/very/long/url/to/shorten](https://www.google.com/search?q=https://example.com/some/very/long/url/to/shorten)"
+        "longUrl": "[https://example.com/some/very/long/url/to/shorten]"
     }
     ```
 * **Success Response:**
     * **Code:** `201 Created`
     * **Body:** (`application/json`)
+
         ```json
         {
             "shortUrl": "http://localhost:8081/AbCdEfG"
         }
         ```
-        *(Where `AbCdEfG` is the generated unique short ID)*
+        *(Where `AbCdEfG` is the generated unique short ID. Note: Use the deployed base URL when interacting with the live service.)*
 * **Error Response:**
     * `400 Bad Request`: If the request body is invalid or the `longUrl` fails basic validation (e.g., empty, not starting with http/https).
 
@@ -100,7 +103,7 @@ This project demonstrates core concepts of Spring Boot web development, data per
 
 * **Method:** `GET`
 * **Path:** `/{shortId}` (e.g., `/AbCdEfG`)
-* **Description:** Accessing this path directly in a web browser (or using any HTTP client that follows redirects) will result in an **HTTP 302 Found** redirect to the original long URL associated with the `{shortId}`. This action also triggers the asynchronous click tracking event.
+* **Description:** Accessing this path directly in a web browser (or using any HTTP client that follows redirects) relative to the service's base URL will result in an **HTTP 302 Found** redirect to the original long URL associated with the `{shortId}`. This action also triggers the asynchronous click tracking event.
 * **Error Response:**
     * `404 Not Found`: If the `{shortId}` does not exist in the system.
 
@@ -114,7 +117,7 @@ This project demonstrates core concepts of Spring Boot web development, data per
         ```json
         {
             "shortId": "AbCdEfG",
-            "longUrl": "[https://example.com/some/very/long/url/to/shorten](https://www.google.com/search?q=https://example.com/some/very/long/url/to/shorten)",
+            "longUrl": "[https://example.com/some/very/long/url/to/shorten](https://example.com/some/very/long/url/to/shorten)",
             "clicks": 5
         }
         ```
@@ -124,18 +127,33 @@ This project demonstrates core concepts of Spring Boot web development, data per
 
 ## Running Tests
 
-To execute the unit tests included in the project, run the following Maven command from the project root directory:
+To execute the unit and integration tests included in the project, run the following Maven command from the project root directory:
 
-```bash
-./mvnw test
-```
+* **Windows (CMD/PowerShell):**
+    ```bash
+    mvnw.cmd test
+    ```
+* **macOS / Linux:**
+    ```bash
+    ./mvnw test
+    ```
+
+## Live Deployment
+
+A live version of this service is deployed on Render's free tier:
+
+* **Base URL:** `https://url-shortener-service-ef2d.onrender.com/`
+
+You can use the API endpoints described above with this base URL.
+
+**Note:** This deployment uses Render's free Redis instance which **does not have data persistence**. All shortened URLs and click counts will be lost if the Redis instance restarts. Free web services also spin down after inactivity and may take 30-60 seconds to respond to the first request after being idle.
 
 ## Acknowledgements
 
-This project was developed with guidance and assistance from Google's Gemini AI, specifically 2.5 Pro (experimental). I used it for:
+This project was developed with guidance and assistance from Google's Gemini AI. Its help was utilized for:
 * Brainstorming project ideas and scope definition.
 * Guidance on technology choices (Java, Spring Boot, Redis Streams).
 * Step-by-step environment setup (JDK, Maven, Docker).
 * Code generation for initial structure and feature implementation.
-* Troubleshooting and debugging errors (like package structure issues).
-* Explaining concepts and best practices (Git, Testing, REST APIs).
+* Troubleshooting and debugging errors (like package structure issues, deployment errors).
+* Explaining concepts and best practices (Git, Testing, REST APIs, Dockerfiles).
