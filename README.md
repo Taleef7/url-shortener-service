@@ -128,3 +128,14 @@ To execute the unit tests included in the project, run the following Maven comma
 
 ```bash
 ./mvnw test
+```
+
+## Acknowledgements
+
+This project was developed with guidance and assistance from Google's Gemini AI, specifically 2.5 Pro (experimental). I used it for:
+* Brainstorming project ideas and scope definition.
+* Guidance on technology choices (Java, Spring Boot, Redis Streams).
+* Step-by-step environment setup (JDK, Maven, Docker).
+* Code generation for initial structure and feature implementation.
+* Troubleshooting and debugging errors (like package structure issues).
+* Explaining concepts and best practices (Git, Testing, REST APIs).
